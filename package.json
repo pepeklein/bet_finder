@@ -1,0 +1,32 @@
+{
+  "name": "bet_finder",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "build": {
+    "appId": "com.seuprojeto.betfinder",
+    "productName": "BetFinder",
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "buildResources": "src/renderer"
+    }
+  },
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.9.0",
+    "cheerio": "^1.1.0"
+  },
+  "devDependencies": {
+    "electron": "^36.4.0",
+    "electron-builder": "^26.0.12"
+  }
+}

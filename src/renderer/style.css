@@ -1,0 +1,254 @@
+/**
+ * BetFinder - Main Stylesheet
+ *
+ * This CSS file defines the visual appearance and layout for the BetFinder application.
+ * It includes styles for:
+ *   - General page layout and background
+ *   - Main container and content alignment
+ *   - Typography for headings and paragraphs
+ *   - Buttons, including the main search and back buttons
+ *   - News site cards and news item lists
+ *   - Loading spinner and loading area
+ *   - Top bar and navigation elements
+ *   - Responsive and accessible color choices
+ *
+ * All dynamic content is rendered inside the #container element.
+ * The color palette is based on dark backgrounds with accent colors for highlights.
+ */
+
+/* General page background and font */
+body {
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* Main application container */
+#container {
+  max-width: 900px;
+  min-height: 100vh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Main heading */
+h1 {
+  color: #fff;
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 16px;
+  font-weight: bold;
+}
+
+/* Paragraphs */
+p {
+  color: #fff;
+  font-size: 1.2rem;
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+/* Main search button */
+button#buscarBtn {
+  background: #065f46;
+  color: #fff;
+  border: none;
+  padding: 24px 64px;
+  border-radius: 4px;
+  font-size: 2rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 32px;
+  transition: background 0.2s;
+  letter-spacing: 1px;
+}
+
+button#buscarBtn:hover {
+  background: #048154;
+}
+
+/* Results container */
+#resultados {
+  width: 100%;
+  margin-top: 32px;
+}
+
+/* Generic button styles */
+button {
+  background: #1a237e;
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #3949ab;
+}
+
+/* Application title in top bar */
+.app-title {
+  color: #fff;
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 48px;
+  font-weight: bold;
+}
+
+/* News site card */
+.site-card {
+  background: #f59e0b;
+  border-radius: 24px;
+  padding: 24px 24px 16px 24px;
+  margin: 24px auto;
+  max-width: 700px;
+  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Site name/title */
+.site-title {
+  color: #1f2937;
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+/* News list container */
+.noticias-list {
+  margin-top: 4px;
+}
+
+/* Individual news item */
+.noticia {
+  margin-bottom: 0;
+  padding: 10px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.noticia:last-child {
+  border-bottom: none;
+}
+
+/* News item link */
+.noticia a {
+  color: #1f2937;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.noticia a:hover {
+  text-decoration: underline;
+}
+
+/* News item date */
+.noticia-data {
+  color: #1f2937;
+  font-size: 0.95em;
+  margin-left: 12px;
+  opacity: 0.7;
+  font-weight: normal;
+}
+
+/* Loading spinner and area */
+.loading-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.spinner {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #f59e0b;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 18px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Loading text */
+.loading-text {
+  color: #fff;
+  font-size: 1.3rem;
+}
+
+/* Back button styles */
+.voltar-btn {
+  background: transparent;
+  color: #fff;
+  border: none;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  margin-left: 0;
+  margin-bottom: 0;
+  transition: color 0.2s;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.voltar-btn:hover {
+  color: #1f2937;
+}
+
+/* Left arrow icon for back button */
+.seta-esquerda {
+  font-size: 1.5rem;
+  margin-right: 8px;
+  line-height: 1;
+}
+
+/* Top bar layout */
+.top-bar {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto 32px auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  min-height: 80px;
+}
+
+.top-bar .app-title {
+  flex: 1;
+  text-align: center;
+  margin: 0;
+  font-size: 3rem;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Search info text */
+.busca-info {
+  color: #fff;
+  text-align: center;
+  font-size: 0.75rem;
+  margin-bottom: 32px;
+  margin-top: -24px;
+  letter-spacing: 0.5px;
+}

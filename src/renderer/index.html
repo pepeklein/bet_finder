@@ -1,0 +1,45 @@
+<!--
+  BetFinder - Betting News Aggregator
+
+  This HTML file serves as the main entry point for the BetFinder application.
+  It provides the initial structure and layout for the user interface, including:
+    - The main container for dynamic content rendering.
+    - A welcome message and description of the application's purpose.
+    - A button to trigger the news search functionality.
+    - A placeholder for displaying search results.
+    - References to the main stylesheet and favicon.
+    - Inclusion of the main JavaScript renderer for dynamic behavior.
+
+  The application dynamically updates the content of the #container div
+  based on user interactions and news search results.
+-->
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>BetFinder - Notícias de Apostas</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <!-- or, if using .ico: -->
+    <!-- <link rel="icon" type="image/x-icon" href="favicon.ico" /> -->
+  </head>
+  <body>
+    <!--
+      Main application container.
+      Content is dynamically rendered here by renderer.js.
+    -->
+    <div id="container">
+      <h1>Bem-vindo ao BetFinder!</h1>
+      <p>
+        Encontre rapidamente as principais notícias sobre apostas nos principais
+        portais do Brasil.
+      </p>
+      <button id="buscarBtn">Buscar Notícias</button>
+      <div id="resultados"></div>
+    </div>
+    <!--
+      Main JavaScript responsible for rendering and application logic.
+    -->
+    <script src="renderer.js"></script>
+  </body>
+</html>
