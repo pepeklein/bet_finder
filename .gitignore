@@ -1,3 +1,20 @@
+/**
+ * @file .gitignore
+ * @project BetFinder - Betting News Aggregator
+ * @description
+ *   Specifies intentionally untracked files to ignore in the BetFinder repository.
+ *   This includes dependencies, build outputs, logs, operating system files,
+ *   editor temporary files, cache files, environment variables, and Electron artifacts.
+ *
+ *   Ensures that sensitive, system-specific, or unnecessary files are not committed
+ *   to version control, maintaining repository cleanliness and security.
+ *
+ * @author
+ *   BetFinder Development Team
+ * @copyright
+ *   Copyright (c) 2025 BetFinder. All rights reserved.
+ */
+
 # Node modules
 node_modules/
 

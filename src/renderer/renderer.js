@@ -1,4 +1,19 @@
 /**
+ * @file renderer.js
+ * @project BetFinder - Betting News Aggregator
+ * @description
+ *   Main renderer script for the BetFinder application. Handles UI rendering,
+ *   user interactions, and communication with the betfinder API for fetching
+ *   betting news from multiple sources. Provides logic for displaying loading
+ *   states, rendering results, copying links, and navigation between screens.
+ *
+ * @author
+ *   BetFinder Development Team
+ * @copyright
+ *   Copyright (c) 2025 BetFinder. All rights reserved.
+ */
+
+/**
  * Handles the click event for the "Buscar Notícias" button.
  * Fetches news from multiple sites using the betfinder API, displays a loading spinner,
  * and renders the results or an error message. Also sets up the "Voltar" (Back) button
@@ -59,8 +74,8 @@ document.getElementById("buscarBtn").onclick = async function () {
                   .map(
                     (n) => `
       <div class="noticia">
+        ${n.data ? `<div class="noticia-data">${formatarData(n.data)}</div>` : ""}
         <a href="${n.link}" target="_blank">${n.titulo}</a>
-        ${n.data ? `<span class="noticia-data">${formatarData(n.data)}</span>` : ""}
       </div>
     `
                   )
@@ -70,9 +85,35 @@ document.getElementById("buscarBtn").onclick = async function () {
       </div>
     `;
   }
+
+  // Final button, centered
+  html += `
+    <div style="width:100%;display:flex;justify-content:center;margin:32px 0 0 0;">
+      <button id="copiarLinksBtn" class="btn-pequeno">Copiar todos os links</button>
+    </div>
+  `;
+
   container.innerHTML = html;
 
-  // Back button event
+  /**
+   * Handles the click event for the "Copiar todos os links" button.
+   * Copies all filtered news links to the clipboard.
+   *
+   * @function
+   * @returns {void}
+   */
+  document.getElementById("copiarLinksBtn").onclick = function () {
+    const todosLinks = noticiasPorSite
+      .flatMap((site) => site.filtradas.map((n) => n.link))
+      .join("\n");
+    if (todosLinks) {
+      navigator.clipboard.writeText(todosLinks);
+      alert("Links copiados para a área de transferência!");
+    } else {
+      alert("Nenhum link para copiar.");
+    }
+  };
+
   /**
    * Handles the click event for the "Voltar" button, rendering the initial screen.
    *
@@ -204,8 +245,8 @@ async function buscarNoticiasHandler() {
                   .map(
                     (n) => `
       <div class="noticia">
+        ${n.data ? `<div class="noticia-data">${formatarData(n.data)}</div>` : ""}
         <a href="${n.link}" target="_blank">${n.titulo}</a>
-        ${n.data ? `<span class="noticia-data">${formatarData(n.data)}</span>` : ""}
       </div>
     `
                   )
@@ -215,9 +256,41 @@ async function buscarNoticiasHandler() {
       </div>
     `;
   }
+
+  // Final button, centered
+  html += `
+    <div style="width:100%;display:flex;justify-content:center;margin:32px 0 0 0;">
+      <button id="copiarLinksBtn" class="btn-pequeno">Copiar todos os links</button>
+    </div>
+  `;
+
   container.innerHTML = html;
 
-  // Back button event
+  /**
+   * Handles the click event for the "Copiar todos os links" button.
+   * Copies all filtered news links to the clipboard.
+   *
+   * @function
+   * @returns {void}
+   */
+  document.getElementById("copiarLinksBtn").onclick = function () {
+    const todosLinks = noticiasPorSite
+      .flatMap((site) => site.filtradas.map((n) => n.link))
+      .join("\n");
+    if (todosLinks) {
+      navigator.clipboard.writeText(todosLinks);
+      alert("Links copiados para a área de transferência!");
+    } else {
+      alert("Nenhum link para copiar.");
+    }
+  };
+
+  /**
+   * Handles the click event for the "Voltar" button, rendering the initial screen.
+   *
+   * @function
+   * @returns {void}
+   */
   document.getElementById("voltarBtn").onclick = renderTelaInicial;
 }
 
@@ -230,24 +303,33 @@ async function buscarNoticiasHandler() {
 renderTelaInicial();
 
 /**
- * Formats a date string into the format: - dd/mm/yy hh:mm.
- * If the input is not a valid date, returns the original string prefixed with "- ".
+ * Formats a date string to the format dd/mm/yy.
+ * Accepts formats such as '2025-06-10', '2025-06-10 00:00', '06.10.25', etc.
+ * If unable to convert, returns an empty string.
  *
  * @function
  * @param {string} data - The date string to format.
- * @returns {string} The formatted date string or the original input if invalid.
+ * @returns {string} The formatted date string in dd/mm/yy format, or an empty string if invalid.
  */
 function formatarData(data) {
-  // Attempts to convert to Date and format as dd/mm/yy [hh:mm]
-  const d = new Date(data);
-  if (!isNaN(d)) {
-    const dia = String(d.getDate()).padStart(2, "0");
-    const mes = String(d.getMonth() + 1).padStart(2, "0");
-    const ano = String(d.getFullYear()).slice(-2);
-    const hora = String(d.getHours()).padStart(2, "0");
-    const min = String(d.getMinutes()).padStart(2, "0");
-    return `- ${dia}/${mes}/${ano} ${hora}:${min}`;
+  if (!data) return "";
+  // Try common formats: yyyy-mm-dd or yyyy-mm-dd hh:mm
+  let match = data.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (match) {
+    return `${match[3]}/${match[2]}/${match[1].slice(-2)}`;
   }
-  // If not a valid date, returns as is
-  return `- ${data}`;
+  // Try format dd.mm.yy or dd.mm.yyyy
+  match = data.match(/^(\d{2})\.(\d{2})\.(\d{2,4})/);
+  if (match) {
+    const ano = match[3].length === 4 ? match[3].slice(-2) : match[3];
+    return `${match[1]}/${match[2]}/${ano}`;
+  }
+  // Try format dd/mm/yy
+  match = data.match(/^(\d{2})\/(\d{2})\/(\d{2,4})/);
+  if (match) {
+    const ano = match[3].length === 4 ? match[3].slice(-2) : match[3];
+    return `${match[1]}/${match[2]}/${ano}`;
+  }
+  // If no match, return empty
+  return "";
 }
