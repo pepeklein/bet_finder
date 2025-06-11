@@ -1,101 +1,107 @@
+/**
+ * @file gamebras.js
+ * @project BetFinder - Betting News Aggregator
+ * @description
+ *   Scraper module for extracting news articles from the GamesBras website.
+ *   Fetches news from the homepage, then visits each news link to extract the publication date and summary.
+ *   Only news published on the current day are included. Each news item contains title, link, summary, and date (in dd/mm/yy format).
+ *
+ * @author
+ *   BetFinder Development Team
+ * @copyright
+ *   Copyright (c) 2025 BetFinder. All rights reserved.
+ */
+
 const axios = require("axios");
 const cheerio = require("cheerio");
 
 /**
- * Checks if a news item with the given link already exists in the news array.
- *
- * @function
- * @param {Array<{link: string}>} news - The array of news objects.
- * @param {string} link - The link to check for existence.
- * @returns {boolean} Returns true if the link does not exist in the news array, false otherwise.
- */
-function notExists(news, link) {
-  return !news.some((n) => n.link === link);
-}
-
-/**
- * Fetches and parses news articles from the GamesBras website.
- * Attempts to retrieve highlighted news first; if none are found,
- * falls back to the main news feed. Extracts title, link, and date for each news item.
+ * Fetches all news articles from the GamesBras homepage.
+ * For each news item, visits the link and includes it only if the publication date matches the current day.
+ * Extracts the date from <h6 class="fecha_interna"> in dd/mm/yy format and the summary from the article content.
  *
  * @async
- * @function
- * @returns {Promise<Array<{titulo: string, link: string, data: (string|null), resumo: string}>>}
- *   Resolves to an array of news objects, each containing:
- *   - titulo: The news title.
- *   - link: The URL to the news article.
- *   - data: The publication date (if available), or null.
- *   - resumo: The summary (empty string by default).
+ * @function fetchGameBrasNews
+ * @returns {Promise<Array<{titulo: string, link: string, data: string|null, resumo: string}>>}
+ *   Resolves to an array of news objects with title, link, date (dd/mm/yy or null), and summary.
  */
 async function fetchGameBrasNews() {
-  const url = "https://www.gamesbras.com/";
-  const res = await axios.get(url);
-  const $ = cheerio.load(res.data);
+  const homeUrl = "https://www.gamesbras.com/";
   const news = [];
 
-  // Attempts to get highlighted news (e.g., slider or featured section)
-  $("div#destaques a:has(h2.tituloM)").each((i, el) => {
-    const urlCompleto = normalizeUrl(
-      "https://www.gamesbras.com",
-      $(el).attr("href")
-    );
-    if (notExists(news, urlCompleto)) {
-      // Tries to find the date in the parent or in the link itself
-      const parent = $(el).closest("div.noticiaM, div.destaqueM");
-      let data = parent.find("span.data").text().trim();
-      if (!data) {
-        data = $(el).find("span.data").text().trim();
-      }
-      if (!data) {
-        // Tries to get from next sibling element
-        data = parent.next("span.data").text().trim();
-      }
-      if (!data) data = null;
-      news.push({
-        titulo: $(el).find("h2.tituloM").text().trim(),
-        link: urlCompleto,
-        data,
-        resumo: "",
-      });
-    }
-  });
+  /**
+   * Today's date in dd/mm/yy format.
+   * @constant
+   * @type {string}
+   */
+  const hoje = new Date();
+  const dia = String(hoje.getDate()).padStart(2, "0");
+  const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+  const ano = String(hoje.getFullYear()).slice(-2);
+  const dataHoje = `${dia}/${mes}/${ano}`;
 
-  // If nothing found, gets all from the main feed
-  if (news.length === 0) {
-    $("a:has(h2.tituloM)").each((i, el) => {
-      const urlCompleto = normalizeUrl(
-        "https://www.gamesbras.com",
-        $(el).attr("href")
-      );
-      if (notExists(news, urlCompleto)) {
-        // Tries to find the date in the parent element
-        const parent = $(el).closest("div.noticiaM, div.destaqueM");
-        const data = parent.find("span.data").text().trim() || null;
-        news.push({
-          titulo: $(el).find("h2.tituloM").text().trim(),
-          link: urlCompleto,
-          data: null,
-          resumo: "",
-        });
+  /**
+   * Checks if the given date string matches today's date.
+   *
+   * @function
+   * @param {string|null} dataStr - The date string to check.
+   * @returns {boolean} True if the date matches today, false otherwise.
+   */
+  function isHoje(dataStr) {
+    return dataStr === dataHoje;
+  }
+
+  try {
+    const homeRes = await axios.get(homeUrl);
+    const $home = cheerio.load(homeRes.data);
+
+    // Finds all <h2 class="tituloM"> and ascends to the nearest ancestor <a>
+    const links = [];
+    $home("h2.tituloM").each((i, el) => {
+      const h2 = $home(el);
+      // Ascend to the nearest ancestor <a>
+      const a = h2.parents("a").first();
+      let link = a.attr("href");
+      const titulo = h2.text().trim();
+      if (link && !link.startsWith("http")) {
+        link = "https://www.gamesbras.com" + link;
+      }
+      if (titulo && link && !links.some((l) => l.link === link)) {
+        links.push({ titulo, link });
       }
     });
-  }
-  // Filters valid news and returns up to 10 items
-  return news.filter((n) => n.titulo && n.link).slice(0, 10);
-}
 
-/**
- * Normalizes a URL, ensuring it is absolute.
- * If the href is relative, prepends the base URL.
- *
- * @function
- * @param {string} base - The base URL.
- * @param {string} href - The href to normalize.
- * @returns {string} The normalized absolute URL, or an empty string if href is falsy.
- */
-function normalizeUrl(base, href) {
-  if (!href) return "";
-  return href.startsWith("http") ? href : base + href;
+    // For each news item, visit and validate the date
+    for (const { titulo, link } of links) {
+      try {
+        const noticiaRes = await axios.get(link);
+        const $noticia = cheerio.load(noticiaRes.data);
+
+        // Extracts the date from <h6 class="fecha_interna" content="YYYY-MM-DD">
+        let data = null;
+        const fecha = $noticia('h6.fecha_interna[itemprop="datePublished"]');
+        if (fecha.length) {
+          const content = fecha.attr("content");
+          if (content && /^\d{4}-\d{2}-\d{2}$/.test(content)) {
+            const [ano, mes, dia] = content.split("-");
+            data = `${dia}/${mes}/${ano.slice(-2)}`;
+          }
+        }
+
+        let resumo = $noticia("div.nota p").text().trim();
+
+        if (isHoje(data)) {
+          news.push({ titulo, link, data, resumo });
+        }
+      } catch (e) {
+        // If an error occurs, skip this news item
+      }
+    }
+  } catch (e) {
+    // If an error occurs, skip and continue
+  }
+
+  return news;
 }
 
 module.exports = { fetchGameBrasNews };

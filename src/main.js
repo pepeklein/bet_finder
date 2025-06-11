@@ -1,13 +1,27 @@
 /**
- * Main process entry point for the BetFinder Electron application.
- * Responsible for window creation, loading the renderer, and handling
- * IPC requests for fetching and scoring news from multiple sources.
+ * @file main.js
+ * @project BetFinder - Betting News Aggregator
+ * @description
+ *   Main process entry point for the BetFinder Electron application.
+ *   Responsible for window creation, loading the renderer, and handling
+ *   IPC requests for fetching and scoring news from multiple sources.
  *
- * Dependencies:
- * - Electron (app, BrowserWindow, ipcMain)
- * - Node.js path module
- * - News scrapers for each site
- * - Relevance module for keyword loading and scoring
+ *   This module initializes the Electron app, creates the main window,
+ *   and manages inter-process communication (IPC) for retrieving and
+ *   processing news articles from various sources. It integrates with
+ *   dedicated scraper modules and a relevance scoring system based on
+ *   configurable keywords.
+ *
+ * @dependencies
+ *   - Electron (app, BrowserWindow, ipcMain)
+ *   - Node.js path module
+ *   - News scrapers for each site
+ *   - Relevance module for keyword loading and scoring
+ *
+ * @author
+ *   BetFinder Development Team
+ * @copyright
+ *   Copyright (c) 2025 BetFinder. All rights reserved.
  */
 
 const { app, BrowserWindow, ipcMain } = require("electron");
@@ -71,7 +85,9 @@ ipcMain.handle("buscar-noticias", async () => {
       const top30 = noticias.slice(0, 30);
       const filtradas = top30
         .map((n) => ({ ...n, score: scoreNews(n, keywords) }))
-        .filter((n) => n.score > 0);
+        .filter((n) => n.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 10);
       resultados.push({
         nome: site.nome,
         total: noticias.length,

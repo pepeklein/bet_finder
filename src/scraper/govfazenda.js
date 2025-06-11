@@ -1,14 +1,28 @@
+/**
+ * @file govfazenda.js
+ * @project BetFinder - Betting News Aggregator
+ * @description
+ *   Scraper module for extracting news articles from the SPA (Secretaria de Prêmios e Apostas)
+ *   section of the Brazilian Ministry of Finance (GovFazenda) website. Fetches news from all
+ *   paginated news pages, filtering to include only news published on the current day.
+ *   Each news item contains title, link, summary, and date (in dd/mm/yyyy format).
+ *
+ * @author
+ *   BetFinder Development Team
+ * @copyright
+ *   Copyright (c) 2025 BetFinder. All rights reserved.
+ */
+
 const axios = require("axios");
 const cheerio = require("cheerio");
 
 /**
  * Normalizes a URL, ensuring it is absolute.
- * If the href is relative, prepends the base URL.
  *
  * @function
- * @param {string} base - The base URL.
+ * @param {string} base - The base URL to use if the href is relative.
  * @param {string} href - The href to normalize.
- * @returns {string} The normalized absolute URL, or an empty string if href is falsy.
+ * @returns {string} The absolute URL.
  */
 function normalizeUrl(base, href) {
   if (!href) return "";
@@ -16,42 +30,70 @@ function normalizeUrl(base, href) {
 }
 
 /**
- * Fetches and parses news articles from the Secretaria de Prêmios e Apostas page
- * on the Brazilian Ministry of Finance website.
- * Extracts title, link, date, and summary for each news item.
+ * Fetches all news articles from the SPA (GovFazenda) news page, including all paginated pages.
+ * Filters and returns only news published on the current day.
  *
  * @async
- * @function
- * @returns {Promise<Array<{titulo: string, link: string, data: (string|null), resumo: string}>>}
- *   Resolves to an array of news objects, each containing:
- *   - titulo: The news title.
- *   - link: The absolute URL to the news article.
- *   - data: The publication date (currently always null).
- *   - resumo: The summary of the news.
+ * @function fetchGovFazendaNews
+ * @returns {Promise<Array<{titulo: string, link: string, data: string, resumo: string}>>}
+ *   Resolves to an array of news objects with title, link, date (dd/mm/yyyy), and summary.
  */
 async function fetchGovFazendaNews() {
-  const url =
-    "https://www.gov.br/fazenda/pt-br/composicao/orgaos/secretaria-de-premios-e-apostas";
-  const res = await axios.get(url);
-  const $ = cheerio.load(res.data);
+  const baseUrl = "https://www.gov.br";
+  let url =
+    "https://www.gov.br/fazenda/pt-br/composicao/orgaos/secretaria-de-premios-e-apostas/copy_of_noticias";
   const news = [];
+  const visited = new Set();
 
-  $(".collection-item").each((i, el) => {
-    const titulo = $(el).find("h2 a").text().trim();
-    const link = $(el).find("h2 a").attr("href");
-    const data = $(el).find("time").attr("datetime") || null;
-    const resumo = $(el).find("p.description").text().trim();
-    if (titulo && link) {
-      news.push({
-        titulo,
-        link: normalizeUrl("https://www.gov.br", link),
-        data: null,
-        resumo,
-      });
+  // Today's date in dd/mm/yyyy format
+  const hoje = new Date();
+  const dia = String(hoje.getDate()).padStart(2, "0");
+  const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+  const ano = hoje.getFullYear();
+  const dataHoje = `${dia}/${mes}/${ano}`;
+
+  while (url && !visited.has(url)) {
+    visited.add(url);
+    const res = await axios.get(url);
+    const $ = cheerio.load(res.data);
+
+    $("article.tileItem").each((i, el) => {
+      const titulo = $(el).find("h2.tileHeadline a").text().trim();
+      const link = $(el).find("h2.tileHeadline a").attr("href");
+      const resumo = $(el).find("p.tileBody span.description").text().trim();
+      // Extracts the date from the span with summary-view-icon
+      let data = null;
+      const spanData = $(el).find("span.summary-view-icon").text().trim();
+      if (spanData) {
+        // Removes icon and gets only the date (e.g., "03/06/2025")
+        data = spanData.replace(/^\s*\S+\s*/, "").trim();
+      }
+      // Adds only if it is from the current day
+      if (
+        titulo &&
+        link &&
+        data === dataHoje &&
+        !news.some((n) => n.link === link)
+      ) {
+        news.push({
+          titulo,
+          link: normalizeUrl("", link),
+          data,
+          resumo,
+        });
+      }
+    });
+
+    // Finds the link to the next page
+    const nextHref = $("ul.paginacao li a.proximo").attr("href");
+    if (nextHref && !visited.has(nextHref)) {
+      url = normalizeUrl(baseUrl, nextHref);
+    } else {
+      url = null;
     }
-  });
-  // Filters valid news and returns up to 10 items
-  return news.filter((n) => n.titulo && n.link).slice(0, 10);
+  }
+
+  return news;
 }
 
 module.exports = { fetchGovFazendaNews };

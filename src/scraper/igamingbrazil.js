@@ -1,70 +1,56 @@
+/**
+ * @file igamingbrazil.js
+ * @project BetFinder - Betting News Aggregator
+ * @description
+ *   Scraper module for extracting news articles from the "Todas as Notícias" page
+ *   of the iGamingBrazil website. Fetches news for the current day only, extracting
+ *   the title, link, and date (if available) for each news item.
+ *
+ * @author
+ *   BetFinder Development Team
+ * @copyright
+ *   Copyright (c) 2025 BetFinder. All rights reserved.
+ */
+
 const axios = require("axios");
 const cheerio = require("cheerio");
 
 /**
- * Fetches and parses news articles from the iGaming Brazil website.
- * Attempts to retrieve highlighted news first; if none are found,
- * falls back to the main news feed. Extracts title, link, and date for each news item.
+ * Fetches news articles from the "Todas as Notícias" page of iGamingBrazil.
+ * Extracts the title, link, and date (if available) for each news item published on the current day.
  *
  * @async
- * @function
- * @returns {Promise<Array<{titulo: string, link: string, data: (string|null), resumo: string}>>}
- *   Resolves to an array of news objects, each containing:
- *   - titulo: The news title.
- *   - link: The URL to the news article.
- *   - data: The publication date (currently always null).
- *   - resumo: The summary (empty string by default).
+ * @function fetchIgamingBrazilNews
+ * @returns {Promise<Array<{titulo: string, link: string, data: string|null, resumo: string}>>}
+ *   Resolves to an array of news objects with title, link, date (ISO format or null), and summary (empty string).
  */
 async function fetchIgamingBrazilNews() {
-  const url = "https://igamingbrazil.com/";
+  const url = "https://igamingbrazil.com/todas-as-noticias/";
   const res = await axios.get(url);
   const $ = cheerio.load(res.data);
   const news = [];
 
-  // Attempts to get highlighted news (e.g., slider or featured section)
-  $(
-    "div.td_block_wrap.tdb_homepage_loop_widget ul.td-block-row li.td-block-span6 h3.entry-title a"
-  ).each((i, el) => {
-    news.push({
-      titulo: $(el).text().trim(),
-      link: $(el).attr("href"),
-      data: null,
-      resumo: "",
-    });
-  });
+  // Today's date in yyyy-mm-dd format
+  const hoje = new Date();
+  const dataHoje = hoje.toISOString().slice(0, 10);
 
-  // If nothing found, gets all from the main feed
-  if (news.length === 0) {
-    $("h3.entry-title a").each((i, el) => {
-      const parent = $(el).closest(
-        "div.td-module-meta-info, div.td-module-container"
-      );
-      const data =
-        parent.find("time, .td-post-date").first().text().trim() || null;
+  $("div.td-module-container.td-category-pos-image").each((i, el) => {
+    const a = $(el).find("h3.entry-title a");
+    const time = $(el).find("time.entry-date");
+    const data = time.attr("datetime")
+      ? time.attr("datetime").slice(0, 10)
+      : null;
+    if (a.text().trim() && a.attr("href") && data === dataHoje) {
       news.push({
-        titulo: $(el).text().trim(),
-        link: $(el).attr("href"),
-        data: null,
+        titulo: a.text().trim(),
+        link: a.attr("href"),
+        data: time.attr("datetime") || null,
         resumo: "",
       });
-    });
-  }
-  // Filters valid news and returns up to 10 items
-  return news.filter((n) => n.titulo && n.link).slice(0, 10);
-}
+    }
+  });
 
-/**
- * Normalizes a URL, ensuring it is absolute.
- * If the href is relative, prepends the base URL.
- *
- * @function
- * @param {string} base - The base URL.
- * @param {string} href - The href to normalize.
- * @returns {string} The normalized absolute URL, or an empty string if href is falsy.
- */
-function normalizeUrl(base, href) {
-  if (!href) return "";
-  return href.startsWith("http") ? href : base + href;
+  return news;
 }
 
 module.exports = { fetchIgamingBrazilNews };

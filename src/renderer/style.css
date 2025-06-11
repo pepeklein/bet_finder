@@ -1,22 +1,27 @@
 /**
- * BetFinder - Main Stylesheet
+ * @file style.css
+ * @project BetFinder - Betting News Aggregator
+ * @description
+ *   Main stylesheet for the BetFinder application. Defines the visual appearance,
+ *   layout, and responsive behavior for all UI components, including the main
+ *   container, headings, buttons, news cards, loading spinner, and navigation elements.
+ *   All dynamic content is rendered inside the #container element.
  *
- * This CSS file defines the visual appearance and layout for the BetFinder application.
- * It includes styles for:
- *   - General page layout and background
- *   - Main container and content alignment
- *   - Typography for headings and paragraphs
- *   - Buttons, including the main search and back buttons
- *   - News site cards and news item lists
- *   - Loading spinner and loading area
- *   - Top bar and navigation elements
- *   - Responsive and accessible color choices
+ *   The color palette is based on dark backgrounds with accent colors for highlights,
+ *   ensuring readability and accessibility.
  *
- * All dynamic content is rendered inside the #container element.
- * The color palette is based on dark backgrounds with accent colors for highlights.
+ * @author
+ *   BetFinder Development Team
+ * @copyright
+ *   Copyright (c) 2025 BetFinder. All rights reserved.
  */
 
-/* General page background and font */
+/* ============================================================================
+ * General Page Layout and Background
+ * ============================================================================
+ */
+
+/* Sets the global font and background for the application */
 body {
   font-family: Arial, sans-serif;
   background: #0f172a;
@@ -25,7 +30,12 @@ body {
   min-height: 100vh;
 }
 
-/* Main application container */
+/* ============================================================================
+ * Main Application Container
+ * ============================================================================
+ */
+
+/* Styles the main container for all dynamic content */
 #container {
   max-width: 900px;
   min-height: 100vh;
@@ -36,7 +46,12 @@ body {
   justify-content: center;
 }
 
-/* Main heading */
+/* ============================================================================
+ * Typography
+ * ============================================================================
+ */
+
+/* Main heading style */
 h1 {
   color: #fff;
   font-size: 3rem;
@@ -45,7 +60,7 @@ h1 {
   font-weight: bold;
 }
 
-/* Paragraphs */
+/* Paragraph style */
 p {
   color: #fff;
   font-size: 1.2rem;
@@ -53,7 +68,12 @@ p {
   margin-bottom: 48px;
 }
 
-/* Main search button */
+/* ============================================================================
+ * Buttons
+ * ============================================================================
+ */
+
+/* Main search button style */
 button#buscarBtn {
   background: #065f46;
   color: #fff;
@@ -72,13 +92,7 @@ button#buscarBtn:hover {
   background: #048154;
 }
 
-/* Results container */
-#resultados {
-  width: 100%;
-  margin-top: 32px;
-}
-
-/* Generic button styles */
+/* Generic button style */
 button {
   background: #1a237e;
   color: #fff;
@@ -93,16 +107,50 @@ button:hover {
   background: #3949ab;
 }
 
-/* Application title in top bar */
-.app-title {
-  color: #fff;
-  font-size: 3rem;
-  text-align: center;
-  margin-bottom: 48px;
+/* Copy links button style */
+#copiarLinksBtn {
+  background: #f59e0b;
+  color: #1f2937;
   font-weight: bold;
+  margin: 0 auto 24px auto;
+  display: block;
+  font-size: 1.1rem;
 }
 
-/* News site card */
+#copiarLinksBtn:hover {
+  background: #fbbf24;
+}
+
+/* Small button style for compact actions */
+.btn-pequeno {
+  background: #f59e0b;
+  color: #1f2937;
+  font-weight: bold;
+  font-size: 0.95rem;
+  padding: 8px 20px;
+  border-radius: 20px;
+  margin: 0 auto;
+  display: block;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+  transition: background 0.2s;
+}
+
+.btn-pequeno:hover {
+  background: #fbbf24;
+}
+
+/* ============================================================================
+ * Results and News Cards
+ * ============================================================================
+ */
+
+/* Results container */
+#resultados {
+  width: 100%;
+  margin-top: 32px;
+}
+
+/* News site card style */
 .site-card {
   background: #f59e0b;
   border-radius: 24px;
@@ -113,7 +161,7 @@ button:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-/* Site name/title */
+/* Site name/title style */
 .site-title {
   color: #1f2937;
   font-size: 1.4rem;
@@ -126,7 +174,7 @@ button:hover {
   margin-top: 4px;
 }
 
-/* Individual news item */
+/* Individual news item style */
 .noticia {
   margin-bottom: 0;
   padding: 10px 0;
@@ -137,7 +185,7 @@ button:hover {
   border-bottom: none;
 }
 
-/* News item link */
+/* News item link style */
 .noticia a {
   color: #1f2937;
   font-size: 1.1rem;
@@ -149,16 +197,22 @@ button:hover {
   text-decoration: underline;
 }
 
-/* News item date */
+/* News item date style */
 .noticia-data {
+  display: block;
+  margin-bottom: 2px;
   color: #1f2937;
   font-size: 0.95em;
-  margin-left: 12px;
   opacity: 0.7;
   font-weight: normal;
 }
 
-/* Loading spinner and area */
+/* ============================================================================
+ * Loading Spinner and Area
+ * ============================================================================
+ */
+
+/* Loading area container */
 .loading-area {
   display: flex;
   flex-direction: column;
@@ -167,6 +221,7 @@ button:hover {
   min-height: 300px;
 }
 
+/* Spinner animation */
 .spinner {
   border: 6px solid #f3f3f3;
   border-top: 6px solid #f59e0b;
@@ -186,13 +241,48 @@ button:hover {
   }
 }
 
-/* Loading text */
+/* Loading text style */
 .loading-text {
   color: #fff;
   font-size: 1.3rem;
 }
 
-/* Back button styles */
+/* ============================================================================
+ * Top Bar and Navigation
+ * ============================================================================
+ */
+
+/* Top bar layout */
+.top-bar {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto 32px auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  min-height: 80px;
+}
+
+.top-bar .app-title {
+  flex: 1;
+  text-align: center;
+  margin: 0;
+  font-size: 3rem;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Application title in top bar */
+.app-title {
+  color: #fff;
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 48px;
+  font-weight: bold;
+}
+
+/* Back button style */
 .voltar-btn {
   background: transparent;
   color: #fff;
@@ -222,28 +312,12 @@ button:hover {
   line-height: 1;
 }
 
-/* Top bar layout */
-.top-bar {
-  width: 100%;
-  max-width: 900px;
-  margin: 0 auto 32px auto;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  position: relative;
-  min-height: 80px;
-}
+/* ============================================================================
+ * Miscellaneous
+ * ============================================================================
+ */
 
-.top-bar .app-title {
-  flex: 1;
-  text-align: center;
-  margin: 0;
-  font-size: 3rem;
-  color: #fff;
-  font-weight: bold;
-}
-
-/* Search info text */
+/* Search info text style */
 .busca-info {
   color: #fff;
   text-align: center;
