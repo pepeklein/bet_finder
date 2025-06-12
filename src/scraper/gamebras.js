@@ -77,7 +77,7 @@ async function fetchGameBrasNews() {
         const noticiaRes = await axios.get(link);
         const $noticia = cheerio.load(noticiaRes.data);
 
-        // Extracts the date from <h6 class="fecha_interna" content="YYYY-MM-DD">
+        // Extracts the publication date from <h6 class="fecha_interna">
         let data = null;
         const fecha = $noticia('h6.fecha_interna[itemprop="datePublished"]');
         if (fecha.length) {
@@ -88,7 +88,11 @@ async function fetchGameBrasNews() {
           }
         }
 
-        let resumo = $noticia("div.nota p").text().trim();
+        // Extracts the summary: prioritizes <h3 itemprop="description">, otherwise uses <div.nota p>
+        let resumo = $noticia('h3[itemprop="description"]').text().trim();
+        if (!resumo) {
+          resumo = $noticia("div.nota p").text().trim();
+        }
 
         if (isHoje(data)) {
           news.push({ titulo, link, data, resumo });

@@ -4,8 +4,8 @@
  * @description
  *   Main stylesheet for the BetFinder application. Defines the visual appearance,
  *   layout, and responsive behavior for all UI components, including the main
- *   container, headings, buttons, news cards, loading spinner, and navigation elements.
- *   All dynamic content is rendered inside the #container element.
+ *   container, headings, buttons, news cards, loading spinner, modal dialogs,
+ *   and navigation elements. All dynamic content is rendered inside the #container element.
  *
  *   The color palette is based on dark backgrounds with accent colors for highlights,
  *   ensuring readability and accessibility.
@@ -21,7 +21,9 @@
  * ============================================================================
  */
 
-/* Sets the global font and background for the application */
+/**
+ * Sets the global font and background for the application.
+ */
 body {
   font-family: Arial, sans-serif;
   background: #0f172a;
@@ -35,7 +37,9 @@ body {
  * ============================================================================
  */
 
-/* Styles the main container for all dynamic content */
+/**
+ * Styles the main container for all dynamic content.
+ */
 #container {
   max-width: 900px;
   min-height: 100vh;
@@ -51,7 +55,9 @@ body {
  * ============================================================================
  */
 
-/* Main heading style */
+/**
+ * Main heading style.
+ */
 h1 {
   color: #fff;
   font-size: 3rem;
@@ -60,7 +66,9 @@ h1 {
   font-weight: bold;
 }
 
-/* Paragraph style */
+/**
+ * Paragraph style.
+ */
 p {
   color: #fff;
   font-size: 1.2rem;
@@ -73,7 +81,9 @@ p {
  * ============================================================================
  */
 
-/* Main search button style */
+/**
+ * Main search button style.
+ */
 button#buscarBtn {
   background: #065f46;
   color: #fff;
@@ -88,11 +98,16 @@ button#buscarBtn {
   letter-spacing: 1px;
 }
 
+/**
+ * Main search button hover effect.
+ */
 button#buscarBtn:hover {
   background: #048154;
 }
 
-/* Generic button style */
+/**
+ * Generic button style.
+ */
 button {
   background: #1a237e;
   color: #fff;
@@ -103,11 +118,16 @@ button {
   cursor: pointer;
 }
 
+/**
+ * Generic button hover effect.
+ */
 button:hover {
   background: #3949ab;
 }
 
-/* Copy links button style */
+/**
+ * Copy links button style.
+ */
 #copiarLinksBtn {
   background: #f59e0b;
   color: #1f2937;
@@ -117,11 +137,16 @@ button:hover {
   font-size: 1.1rem;
 }
 
+/**
+ * Copy links button hover effect.
+ */
 #copiarLinksBtn:hover {
   background: #fbbf24;
 }
 
-/* Small button style for compact actions */
+/**
+ * Small button style for compact actions.
+ */
 .btn-pequeno {
   background: #f59e0b;
   color: #1f2937;
@@ -135,6 +160,9 @@ button:hover {
   transition: background 0.2s;
 }
 
+/**
+ * Small button hover effect.
+ */
 .btn-pequeno:hover {
   background: #fbbf24;
 }
@@ -144,13 +172,17 @@ button:hover {
  * ============================================================================
  */
 
-/* Results container */
+/**
+ * Results container.
+ */
 #resultados {
   width: 100%;
   margin-top: 32px;
 }
 
-/* News site card style */
+/**
+ * News site card style.
+ */
 .site-card {
   background: #f59e0b;
   border-radius: 24px;
@@ -161,7 +193,9 @@ button:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-/* Site name/title style */
+/**
+ * Site name/title style.
+ */
 .site-title {
   color: #1f2937;
   font-size: 1.4rem;
@@ -169,23 +203,32 @@ button:hover {
   margin-bottom: 12px;
 }
 
-/* News list container */
+/**
+ * News list container.
+ */
 .noticias-list {
   margin-top: 4px;
 }
 
-/* Individual news item style */
+/**
+ * Individual news item style.
+ */
 .noticia {
   margin-bottom: 0;
   padding: 10px 0;
   border-bottom: 1px solid #e5e7eb;
 }
 
+/**
+ * Removes border from the last news item.
+ */
 .noticia:last-child {
   border-bottom: none;
 }
 
-/* News item link style */
+/**
+ * News item link style.
+ */
 .noticia a {
   color: #1f2937;
   font-size: 1.1rem;
@@ -193,11 +236,16 @@ button:hover {
   text-decoration: none;
 }
 
+/**
+ * News item link hover effect.
+ */
 .noticia a:hover {
   text-decoration: underline;
 }
 
-/* News item date style */
+/**
+ * News item date style.
+ */
 .noticia-data {
   display: block;
   margin-bottom: 2px;
@@ -207,12 +255,47 @@ button:hover {
   font-weight: normal;
 }
 
+/**
+ * Aligns the action button next to the news link.
+ */
+.noticia-actions {
+  margin-left: 0;
+  margin-top: 6px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/**
+ * Centralized action buttons for news items.
+ */
+.noticia-actions-central {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
+/**
+ * Small button inside news item.
+ */
+.noticia .btn-pequeno {
+  margin: 0;
+  padding: 2px 14px;
+  font-size: 0.95em;
+  display: inline-block;
+}
+
 /* ============================================================================
  * Loading Spinner and Area
  * ============================================================================
  */
 
-/* Loading area container */
+/**
+ * Loading area container.
+ */
 .loading-area {
   display: flex;
   flex-direction: column;
@@ -221,7 +304,9 @@ button:hover {
   min-height: 300px;
 }
 
-/* Spinner animation */
+/**
+ * Spinner animation.
+ */
 .spinner {
   border: 6px solid #f3f3f3;
   border-top: 6px solid #f59e0b;
@@ -232,6 +317,9 @@ button:hover {
   margin-bottom: 18px;
 }
 
+/**
+ * Keyframes for spinner rotation.
+ */
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -241,7 +329,9 @@ button:hover {
   }
 }
 
-/* Loading text style */
+/**
+ * Loading text style.
+ */
 .loading-text {
   color: #fff;
   font-size: 1.3rem;
@@ -252,7 +342,9 @@ button:hover {
  * ============================================================================
  */
 
-/* Top bar layout */
+/**
+ * Top bar layout.
+ */
 .top-bar {
   width: 100%;
   max-width: 900px;
@@ -264,6 +356,9 @@ button:hover {
   min-height: 80px;
 }
 
+/**
+ * Application title in top bar.
+ */
 .top-bar .app-title {
   flex: 1;
   text-align: center;
@@ -273,7 +368,9 @@ button:hover {
   font-weight: bold;
 }
 
-/* Application title in top bar */
+/**
+ * Application title style.
+ */
 .app-title {
   color: #fff;
   font-size: 3rem;
@@ -282,7 +379,9 @@ button:hover {
   font-weight: bold;
 }
 
-/* Back button style */
+/**
+ * Back button style.
+ */
 .voltar-btn {
   background: transparent;
   color: #fff;
@@ -301,11 +400,16 @@ button:hover {
   transform: translateY(-50%);
 }
 
+/**
+ * Back button hover effect.
+ */
 .voltar-btn:hover {
   color: #1f2937;
 }
 
-/* Left arrow icon for back button */
+/**
+ * Left arrow icon for back button.
+ */
 .seta-esquerda {
   font-size: 1.5rem;
   margin-right: 8px;
@@ -317,7 +421,9 @@ button:hover {
  * ============================================================================
  */
 
-/* Search info text style */
+/**
+ * Search info text style.
+ */
 .busca-info {
   color: #fff;
   text-align: center;
@@ -325,4 +431,123 @@ button:hover {
   margin-bottom: 32px;
   margin-top: -24px;
   letter-spacing: 0.5px;
+}
+
+/* ============================================================================
+ * Modal Dialog for News Summary
+ * ============================================================================
+ */
+
+/**
+ * Modal overlay for news summary.
+ */
+#modalResumo {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+}
+
+/**
+ * Modal background overlay.
+ */
+.modal-resumo-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/**
+ * Modal content box.
+ */
+.modal-resumo-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #0f172a;
+  color: #f59e0b;
+  border-radius: 12px;
+  max-width: 400px;
+  min-width: 260px;
+  padding: 24px 20px 16px 20px;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.18);
+}
+
+/**
+ * Modal header with title and close button.
+ */
+.modal-resumo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+  color: #f59e0b;
+}
+
+/**
+ * Modal close button.
+ */
+.modal-resumo-fechar {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  color: #1f2937;
+  cursor: pointer;
+  margin-left: 12px;
+}
+
+/**
+ * Modal title style.
+ */
+.modal-resumo-titulo {
+  font-size: 1.15rem;
+  font-weight: bold;
+  color: #f59e0b;
+}
+
+/**
+ * Modal body text style.
+ */
+.modal-resumo-body {
+  font-size: 1.05rem;
+  color: #ffffff;
+  white-space: pre-line;
+}
+
+/**
+ * Modal action area for "View Article" button.
+ */
+.modal-resumo-ver-materia {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+/**
+ * "View Article" button style in modal.
+ */
+.btn-ver-materia {
+  background: #f59e0b;
+  color: #1f2937;
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 10px 28px;
+  border-radius: 20px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+/**
+ * "View Article" button hover effect in modal.
+ */
+.btn-ver-materia:hover {
+  background: #fbbf24;
 }

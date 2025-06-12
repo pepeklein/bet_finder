@@ -45,7 +45,11 @@ async function fetchGovFazendaNews() {
   const news = [];
   const visited = new Set();
 
-  // Today's date in dd/mm/yyyy format
+  /**
+   * Today's date in dd/mm/yyyy format.
+   * @constant
+   * @type {string}
+   */
   const hoje = new Date();
   const dia = String(hoje.getDate()).padStart(2, "0");
   const mes = String(hoje.getMonth() + 1).padStart(2, "0");

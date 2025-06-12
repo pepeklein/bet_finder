@@ -34,15 +34,35 @@ document.getElementById("buscarBtn").onclick = async function () {
 
   let noticiasPorSite = [];
   try {
-    /**
-     * @type {Array<{nome: string, total: number, filtradas: Array<{titulo: string, link: string, data: string, score: number}>}>}
-     */
     noticiasPorSite = await window.betfinder.buscarNoticias();
   } catch (err) {
     container.innerHTML = `<p style="color:red;">Erro ao buscar notícias: ${err.message}</p>`;
     return;
   }
 
+  // Displays a success message with a green tick for 2 seconds
+  container.innerHTML = `
+    <div class="loading-area">
+      <div style="font-size: 56px; color: #22c55e; margin-bottom: 18px;">&#10003;</div>
+      <div class="loading-text" style="color: #22c55e;">Notícias encontradas!</div>
+    </div>
+  `;
+
+  setTimeout(() => {
+    renderNoticias(noticiasPorSite, container);
+  }, 2000);
+};
+
+/**
+ * Renders the news results for each site.
+ * Displays site cards, news items, and action buttons for copying links and viewing summaries.
+ *
+ * @function
+ * @param {Array} noticiasPorSite - Array of news results grouped by site.
+ * @param {HTMLElement} container - The container element to render into.
+ * @returns {void}
+ */
+function renderNoticias(noticiasPorSite, container) {
   // Back button and title
   let html = `
     <div class="top-bar">
@@ -72,12 +92,16 @@ document.getElementById("buscarBtn").onclick = async function () {
               ? '<div class="noticia">Nenhuma notícia encontrada.</div>'
               : site.filtradas
                   .map(
-                    (n) => `
-      <div class="noticia">
-        ${n.data ? `<div class="noticia-data">${formatarData(n.data)}</div>` : ""}
-        <a href="${n.link}" target="_blank">${n.titulo}</a>
+                    (n, idx) => `
+    <div class="noticia" data-link="${n.link}" id="noticia-${site.nome}-${idx}">
+      ${n.data ? `<div class="noticia-data">${formatarData(n.data)}</div>` : ""}
+      <a href="${n.link}" target="_blank">${n.titulo}</a>
+      <div class="noticia-actions-central">
+        <button class="btn-pequeno copiar-link-btn" title="Copiar link">Copiar Link</button>
+        <button class="btn-pequeno ver-resumo-btn" title="Ver resumo" data-resumo="${encodeURIComponent(n.resumo || "")}">Ver Resumo</button>
       </div>
-    `
+    </div>
+  `
                   )
                   .join("")
           }
@@ -94,6 +118,36 @@ document.getElementById("buscarBtn").onclick = async function () {
   `;
 
   container.innerHTML = html;
+
+  // Adds click events to news actions
+  document.querySelectorAll(".noticia").forEach((el) => {
+    // "Copy link" button
+    const copiarBtn = el.querySelector(".copiar-link-btn");
+    if (copiarBtn) {
+      copiarBtn.onclick = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const link = el.getAttribute("data-link");
+        navigator.clipboard.writeText(link);
+        alert("Link copiado!");
+      };
+    }
+
+    // "View Summary" button
+    const resumoBtn = el.querySelector(".ver-resumo-btn");
+    if (resumoBtn) {
+      resumoBtn.onclick = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const resumo = decodeURIComponent(
+          resumoBtn.getAttribute("data-resumo")
+        );
+        const titulo = el.querySelector("a").innerText;
+        const link = el.getAttribute("data-link");
+        exibirResumoModal(titulo, resumo, link);
+      };
+    }
+  });
 
   /**
    * Handles the click event for the "Copiar todos os links" button.
@@ -120,19 +174,8 @@ document.getElementById("buscarBtn").onclick = async function () {
    * @function
    * @returns {void}
    */
-  document.getElementById("voltarBtn").onclick = function () {
-    container.innerHTML = `
-      <h1>Bem-vindo ao BetFinder!</h1>
-      <p>
-        Encontre rapidamente as principais notícias sobre apostas nos principais
-        portais do Brasil.
-      </p>
-      <button id="buscarBtn">Buscar Notícias</button>
-      <div id="resultados"></div>
-    `;
-    document.getElementById("buscarBtn").onclick = arguments.callee;
-  };
-};
+  document.getElementById("voltarBtn").onclick = renderTelaInicial;
+}
 
 /**
  * Mock function for frontend testing.
@@ -205,93 +248,23 @@ async function buscarNoticiasHandler() {
 
   let noticiasPorSite = [];
   try {
-    /**
-     * @type {Array<{nome: string, total: number, filtradas: Array<{titulo: string, link: string, data: string, score: number}>}>}
-     */
     noticiasPorSite = await window.betfinder.buscarNoticias();
   } catch (err) {
     container.innerHTML = `<p style="color:red;">Erro ao buscar notícias: ${err.message}</p>`;
     return;
   }
 
-  // Back button and title
-  let html = `
-    <div class="top-bar">
-      <button id="voltarBtn" class="voltar-btn" title="Voltar">
-        <span class="seta-esquerda">&#8592;</span> Voltar
-      </button>
-      <h1 class="app-title">BetFinder</h1>
+  // Displays a success message with a green tick for 2 seconds
+  container.innerHTML = `
+    <div class="loading-area">
+      <div style="font-size: 56px; color: #22c55e; margin-bottom: 18px;">&#10003;</div>
+      <div class="loading-text" style="color: #22c55e;">Notícias encontradas!</div>
     </div>
   `;
 
-  // Adds search date/time
-  const agora = new Date();
-  const dataFormatada = agora.toLocaleDateString("pt-BR");
-  const horaFormatada = agora.toLocaleTimeString("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-  html += `<div class="busca-info">Notícias encontradas em ${dataFormatada}, às ${horaFormatada}</div>`;
-
-  for (const site of noticiasPorSite) {
-    html += `
-      <div class="site-card">
-        <div class="site-title">${site.nome}</div>
-        <div class="noticias-list">
-          ${
-            site.filtradas.length === 0
-              ? '<div class="noticia">Nenhuma notícia encontrada.</div>'
-              : site.filtradas
-                  .map(
-                    (n) => `
-      <div class="noticia">
-        ${n.data ? `<div class="noticia-data">${formatarData(n.data)}</div>` : ""}
-        <a href="${n.link}" target="_blank">${n.titulo}</a>
-      </div>
-    `
-                  )
-                  .join("")
-          }
-        </div>
-      </div>
-    `;
-  }
-
-  // Final button, centered
-  html += `
-    <div style="width:100%;display:flex;justify-content:center;margin:32px 0 0 0;">
-      <button id="copiarLinksBtn" class="btn-pequeno">Copiar todos os links</button>
-    </div>
-  `;
-
-  container.innerHTML = html;
-
-  /**
-   * Handles the click event for the "Copiar todos os links" button.
-   * Copies all filtered news links to the clipboard.
-   *
-   * @function
-   * @returns {void}
-   */
-  document.getElementById("copiarLinksBtn").onclick = function () {
-    const todosLinks = noticiasPorSite
-      .flatMap((site) => site.filtradas.map((n) => n.link))
-      .join("\n");
-    if (todosLinks) {
-      navigator.clipboard.writeText(todosLinks);
-      alert("Links copiados para a área de transferência!");
-    } else {
-      alert("Nenhum link para copiar.");
-    }
-  };
-
-  /**
-   * Handles the click event for the "Voltar" button, rendering the initial screen.
-   *
-   * @function
-   * @returns {void}
-   */
-  document.getElementById("voltarBtn").onclick = renderTelaInicial;
+  setTimeout(() => {
+    renderNoticias(noticiasPorSite, container);
+  }, 2000);
 }
 
 /**
@@ -332,4 +305,39 @@ function formatarData(data) {
   }
   // If no match, return empty
   return "";
+}
+
+/**
+ * Displays a modal with the news summary.
+ *
+ * @function
+ * @param {string} titulo - The title of the news article.
+ * @param {string} resumo - The summary text to display.
+ * @param {string} link - The link to the full news article.
+ * @returns {void}
+ */
+function exibirResumoModal(titulo, resumo, link) {
+  // Removes old modal if it exists
+  const antigo = document.getElementById("modalResumo");
+  if (antigo) antigo.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "modalResumo";
+  modal.innerHTML = `
+    <div class="modal-resumo-bg"></div>
+    <div class="modal-resumo-box">
+      <div class="modal-resumo-header">
+        <span class="modal-resumo-titulo">${titulo}</span>
+        <button class="modal-resumo-fechar" title="Fechar">&times;</button>
+      </div>
+      <div class="modal-resumo-body">${resumo ? resumo.replace(/\n/g, "<br>") : "Resumo não disponível."}</div>
+      <div class="modal-resumo-ver-materia">
+        <a href="${link}" target="_blank" rel="noopener noreferrer" class="btn-pequeno btn-ver-materia">Ver matéria</a>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  modal.querySelector(".modal-resumo-fechar").onclick = () => modal.remove();
+  modal.querySelector(".modal-resumo-bg").onclick = () => modal.remove();
 }
