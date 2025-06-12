@@ -12,12 +12,6 @@
  *   dedicated scraper modules and a relevance scoring system based on
  *   configurable keywords.
  *
- * @dependencies
- *   - Electron (app, BrowserWindow, ipcMain)
- *   - Node.js path module
- *   - News scrapers for each site
- *   - Relevance module for keyword loading and scoring
- *
  * @author
  *   BetFinder Development Team
  * @copyright
@@ -103,4 +97,18 @@ ipcMain.handle("buscar-noticias", async () => {
     }
   }
   return resultados;
+});
+
+/**
+ * Ensures that all external links open in the user's default browser.
+ *
+ * @event
+ * @param {Electron.App} app - The Electron application instance.
+ * @param {Electron.WebContents} contents - The web contents instance.
+ */
+app.on("web-contents-created", (event, contents) => {
+  contents.setWindowOpenHandler(({ url }) => {
+    require("electron").shell.openExternal(url);
+    return { action: "deny" };
+  });
 });
