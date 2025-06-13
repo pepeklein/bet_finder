@@ -94,11 +94,13 @@ function renderNoticias(noticiasPorSite, container) {
                   .map(
                     (n, idx) => `
     <div class="noticia" data-link="${n.link}" id="noticia-${site.nome}-${idx}">
+      <input type="checkbox" class="noticia-checkbox" style="margin-right:8px;">
       ${n.data ? `<div class="noticia-data">${formatarData(n.data)}</div>` : ""}
       <a href="${n.link}" target="_blank">${n.titulo}</a>
       <div class="noticia-actions-central">
         <button class="btn-pequeno copiar-link-btn" title="Copiar link">Copiar Link</button>
         <button class="btn-pequeno ver-resumo-btn" title="Ver resumo" data-resumo="${encodeURIComponent(n.resumo || "")}">Ver Resumo</button>
+        <button class="btn-pequeno copiar-multiplas-btn" style="display:none; float:right;">Copiar Selecionadas</button>
       </div>
     </div>
   `
@@ -115,6 +117,13 @@ function renderNoticias(noticiasPorSite, container) {
     <div style="width:100%;display:flex;justify-content:center;margin:32px 0 0 0;">
       <button id="copiarLinksBtn" class="btn-pequeno">Copiar todos os links</button>
     </div>
+  `;
+
+  // Global button for copying selected news (initially hidden)
+  html += `
+    <button id="copiarSelecionadasBtn" style="display:none;position:fixed;left:50%;bottom:32px;transform:translateX(-50%);z-index:10000;" class="btn-copiar-global">
+      Copiar selecionadas
+    </button>
   `;
 
   container.innerHTML = html;
@@ -175,6 +184,75 @@ function renderNoticias(noticiasPorSite, container) {
    * @returns {void}
    */
   document.getElementById("voltarBtn").onclick = renderTelaInicial;
+
+  // Updates the visibility of the "Copy Selected" button
+  function atualizarBotoesCopiar() {
+    document.querySelectorAll('.noticia').forEach(noticia => {
+      const btn = noticia.querySelector('.copiar-multiplas-btn');
+      const checkbox = noticia.querySelector('.noticia-checkbox');
+      btn.style.display = checkbox.checked ? 'inline-block' : 'none';
+    });
+  }
+
+  // Updates the visibility of the global copy button
+  function atualizarBotaoGlobal() {
+    const algumSelecionado = document.querySelectorAll('.noticia-checkbox:checked').length > 0;
+    document.getElementById('copiarSelecionadasBtn').style.display = algumSelecionado ? 'block' : 'none';
+  }
+
+  // Event for each checkbox to update global copy button
+  document.querySelectorAll('.noticia-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', atualizarBotaoGlobal);
+  });
+
+  // Event for copying selected news
+  document.querySelectorAll('.copiar-multiplas-btn').forEach(btn => {
+    btn.onclick = function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      // Gets all selected news
+      const selecionadas = Array.from(document.querySelectorAll('.noticia-checkbox:checked')).map(cb => cb.closest('.noticia'));
+      if (selecionadas.length === 0) return;
+      const textos = selecionadas.map(noticia => {
+        const titulo = noticia.querySelector('a').innerText;
+        const resumoBtn = noticia.querySelector('.ver-resumo-btn');
+        const resumo = resumoBtn ? decodeURIComponent(resumoBtn.getAttribute('data-resumo')) : '';
+        const link = noticia.getAttribute('data-link');
+        return `*${titulo}*\n${resumo}\nLink: ${link}`;
+      });
+      navigator.clipboard.writeText(textos.join('\n\n'));
+      alert('Notícias copiadas para a área de transferência!');
+    };
+  });
+
+  /**
+   * Handles the click event for the "Copiar selecionadas" button.
+   * Copies the links of all selected news items to the clipboard.
+   *
+   * @function
+   * @returns {void}
+   */
+  document.getElementById("copiarSelecionadasBtn").onclick = function () {
+    const selecionadas = Array.from(
+      document.querySelectorAll(".noticia-checkbox:checked")
+    ).map((cb) => cb.closest(".noticia"));
+
+    if (selecionadas.length === 0) {
+      alert("Nenhuma notícia selecionada.");
+      return;
+    }
+
+    const textos = selecionadas.map((noticia) => {
+      const titulo = noticia.querySelector("a").innerText;
+      const resumoBtn = noticia.querySelector(".ver-resumo-btn");
+      const resumo = resumoBtn ? decodeURIComponent(resumoBtn.getAttribute("data-resumo")) : "";
+      const link = noticia.getAttribute("data-link");
+      return `*${titulo}*\n${resumo}\nLink: ${link}`;
+    });
+
+    navigator.clipboard.writeText(textos.join('\n\n'));
+    alert("Notícias copiadas para a área de transferência!");
+  };
 }
 
 /**
@@ -308,12 +386,12 @@ function formatarData(data) {
 }
 
 /**
- * Displays a modal with the news summary.
+ * Displays a modal with the news summary and action buttons.
  *
  * @function
  * @param {string} titulo - The title of the news article.
- * @param {string} resumo - The summary text to display.
- * @param {string} link - The link to the full news article.
+ * @param {string} resumo - The summary of the news article.
+ * @param {string} link - The link to the news article.
  * @returns {void}
  */
 function exibirResumoModal(titulo, resumo, link) {
@@ -332,6 +410,7 @@ function exibirResumoModal(titulo, resumo, link) {
       </div>
       <div class="modal-resumo-body">${resumo ? resumo.replace(/\n/g, "<br>") : "Resumo não disponível."}</div>
       <div class="modal-resumo-ver-materia">
+        <button class="btn-copiar-materia">Copiar matéria</button>
         <a href="${link}" target="_blank" rel="noopener noreferrer" class="btn-pequeno btn-ver-materia">Ver matéria</a>
       </div>
     </div>
@@ -340,4 +419,11 @@ function exibirResumoModal(titulo, resumo, link) {
 
   modal.querySelector(".modal-resumo-fechar").onclick = () => modal.remove();
   modal.querySelector(".modal-resumo-bg").onclick = () => modal.remove();
+
+  // Copies the formatted title, summary, and link
+  modal.querySelector(".btn-copiar-materia").onclick = () => {
+    const texto = `*${titulo}*\n${resumo || ""}\nLink: ${link}`;
+    navigator.clipboard.writeText(texto);
+    alert("Matéria copiada para a área de transferência!");
+  };
 }
