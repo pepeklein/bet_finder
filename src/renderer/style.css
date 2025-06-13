@@ -167,6 +167,29 @@ button:hover {
   background: #fbbf24;
 }
 
+/**
+ * Global copy button style.
+ */
+.btn-copiar-global {
+  background: #065f46;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.15rem;
+  padding: 16px 40px;
+  border-radius: 28px;
+  border: none;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+/**
+ * Global copy button hover effect.
+ */
+.btn-copiar-global:hover {
+  background: #048154;
+}
+
 /* ============================================================================
  * Results and News Cards
  * ============================================================================
@@ -217,6 +240,9 @@ button:hover {
   margin-bottom: 0;
   padding: 10px 0;
   border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 /**
@@ -286,6 +312,33 @@ button:hover {
   padding: 2px 14px;
   font-size: 0.95em;
   display: inline-block;
+}
+
+/**
+ * Checkbox style inside news item.
+ */
+.noticia-checkbox {
+  margin-top: 6px;
+  margin-right: 10px;
+}
+
+.noticia-checkbox:checked {
+  background: #fff;
+  border-color: #222;
+}
+
+.noticia-checkbox:checked::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 8px;
+  height: 14px;
+  border: solid #222;
+  border-width: 0 3px 3px 0;
+  border-radius: 1px;
+  transform: rotate(45deg);
+  display: block;
 }
 
 /* ============================================================================
@@ -528,13 +581,17 @@ button:hover {
 .modal-resumo-ver-materia {
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 16px;
   margin-top: 24px;
+  width: 100%;
 }
 
 /**
- * "View Article" button style in modal.
+ * "View Article" and "Copy Article" button styles in modal.
  */
-.btn-ver-materia {
+.btn-ver-materia,
+.btn-copiar-materia {
   background: #f59e0b;
   color: #1f2937;
   font-weight: bold;
@@ -543,11 +600,14 @@ button:hover {
   border-radius: 20px;
   text-decoration: none;
   transition: background 0.2s;
+  border: none;
+  cursor: pointer;
 }
 
 /**
- * "View Article" button hover effect in modal.
+ * Hover effect for both modal buttons.
  */
-.btn-ver-materia:hover {
+.btn-ver-materia:hover,
+.btn-copiar-materia:hover {
   background: #fbbf24;
 }
