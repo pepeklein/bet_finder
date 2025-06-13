@@ -74,7 +74,12 @@ async function fetchBnldataNews() {
     const link = $ed(el).find("a").first().attr("href");
     const resumo = $ed(el).find("p").text().trim();
     const data = extraiData($ed, el);
-    if (titulo && link && !news.some((n) => n.link === link)) {
+    if (
+      titulo &&
+      link &&
+      data === dataHoje &&
+      !news.some((n) => n.link === link)
+    ) {
       news.push({ titulo, link, data, resumo });
     }
   });
